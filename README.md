@@ -1,5 +1,8 @@
 # Video-to-Prompt Pipeline for Underwater ROV Footage
 
+> **📡 This is the TRANSMITTER part of the Semantic Underwater Communication system.**  
+> For the Receiver part, see: [Semantic_Underwater_communication_Receiver](https://github.com/soham12112/Semantic_Underwater_communication_Receiver)
+
 A model-chained architecture that converts underwater ROV video into structured scene reports and cinematic generation prompts. Designed to run mostly on CPU with OpenCV, using an LLM only for final prompt synthesis.
 
 ## Architecture Overview
