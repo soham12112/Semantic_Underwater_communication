@@ -1,0 +1,239 @@
+{
+  "video_path": ".\\object_in_water.mp4",
+  "duration_sec": 11.611600000000001,
+  "context": {
+    "domain": "underwater",
+    "platform": "ROV",
+    "camera_style": "documentary GoPro wide-angle",
+    "constraints": [
+      "realism",
+      "smooth motion",
+      "stable color palette",
+      "faithful reconstruction"
+    ]
+  },
+  "environment": {
+    "water_color": "turquoise-green",
+    "visibility": "poor visibility",
+    "particulate": "minimal particulate",
+    "seafloor": [],
+    "lighting": "ambient underwater lighting"
+  },
+  "main_subject": {
+    "hypothesis": "unknown (no ROI captions available)",
+    "appearance": [],
+    "notable_details": [],
+    "confidence": 0.0
+  },
+  "camera_motion": [
+    {
+      "t0": 0.5339666666666667,
+      "t1": 1.2679333333333334,
+      "labels": [
+        "truck_right",
+        "push_in"
+      ],
+      "magnitude": 32.88795315354246,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 1.2679333333333334,
+      "t1": 1.9019,
+      "labels": [
+        "truck_right",
+        "pedestal_up",
+        "pull_out",
+        "pan_left"
+      ],
+      "magnitude": 52.97068600144507,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 1.9019,
+      "t1": 2.5358666666666667,
+      "labels": [
+        "pedestal_up",
+        "pull_out"
+      ],
+      "magnitude": 26.047156690015235,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 2.5358666666666667,
+      "t1": 3.1698333333333335,
+      "labels": [
+        "pedestal_up",
+        "pull_out",
+        "pan_left"
+      ],
+      "magnitude": 42.07701982215929,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 3.1698333333333335,
+      "t1": 3.8038,
+      "labels": [
+        "pan_right",
+        "pedestal_down",
+        "pull_out",
+        "truck_left"
+      ],
+      "magnitude": 48.61055312324184,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 3.8038,
+      "t1": 4.437766666666667,
+      "labels": [
+        "pedestal_up",
+        "pull_out",
+        "pan_left"
+      ],
+      "magnitude": 62.898876296868,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 4.437766666666667,
+      "t1": 5.071733333333333,
+      "labels": [
+        "pan_right",
+        "pull_out",
+        "truck_left"
+      ],
+      "magnitude": 72.6219380577103,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 5.071733333333333,
+      "t1": 6.973633333333334,
+      "labels": [
+        "pedestal_up",
+        "pull_out",
+        "truck_left",
+        "pan_left"
+      ],
+      "magnitude": 118.55269805126737,
+      "smoothness": 0.25520379918942543
+    },
+    {
+      "t0": 6.973633333333334,
+      "t1": 7.6076,
+      "labels": [
+        "pedestal_up",
+        "pull_out",
+        "pan_left"
+      ],
+      "magnitude": 68.71582017830062,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 7.6076,
+      "t1": 8.241566666666667,
+      "labels": [
+        "pull_out",
+        "truck_left",
+        "pan_left"
+      ],
+      "magnitude": 52.56208412772357,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 8.241566666666667,
+      "t1": 8.875533333333333,
+      "labels": [
+        "pedestal_down",
+        "pan_right",
+        "truck_left"
+      ],
+      "magnitude": 120.05038123721555,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 8.875533333333333,
+      "t1": 9.509500000000001,
+      "labels": [
+        "push_in",
+        "pedestal_down",
+        "pan_right"
+      ],
+      "magnitude": 93.4864427711305,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 9.509500000000001,
+      "t1": 10.143466666666667,
+      "labels": [
+        "push_in",
+        "pedestal_down",
+        "pan_right",
+        "truck_left"
+      ],
+      "magnitude": 104.61993289642442,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 10.143466666666667,
+      "t1": 10.777433333333333,
+      "labels": [
+        "push_in",
+        "pedestal_down",
+        "pan_right"
+      ],
+      "magnitude": 41.27421329596939,
+      "smoothness": 1.0
+    },
+    {
+      "t0": 10.777433333333333,
+      "t1": 11.4114,
+      "labels": [
+        "push_in",
+        "pan_left"
+      ],
+      "magnitude": 13.816246103839475,
+      "smoothness": 1.0
+    }
+  ],
+  "negatives": {
+    "people_detected": true,
+    "fish_detected": false,
+    "text_detected": false,
+    "artificial_light": false
+  },
+  "keyframes": [
+    {
+      "timestamp": 0.0,
+      "global_caption": null,
+      "roi_caption": null,
+      "detected_objects": []
+    },
+    {
+      "timestamp": 2.5358666666666667,
+      "global_caption": null,
+      "roi_caption": null,
+      "detected_objects": []
+    },
+    {
+      "timestamp": 5.7057,
+      "global_caption": null,
+      "roi_caption": null,
+      "detected_objects": []
+    },
+    {
+      "timestamp": 8.241566666666667,
+      "global_caption": null,
+      "roi_caption": null,
+      "detected_objects": []
+    },
+    {
+      "timestamp": 11.4114,
+      "global_caption": null,
+      "roi_caption": null,
+      "detected_objects": []
+    }
+  ],
+  "processing_notes": [
+    "Motion types detected: push_in, pedestal_down, pan_left, truck_right, pan_right, pedestal_up, pull_out, truck_left",
+    "ROIs tracked: 1",
+    "Keyframes captioned: 0"
+  ]
+}

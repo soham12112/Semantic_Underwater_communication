@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.env
+
+# Model files (large)
+*.pt
+*.pth
+
+# IDE
+.vscode/
+.idea/
+
+# Output files (optional - remove these lines if you want to include outputs)
+# output/

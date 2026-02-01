@@ -1,0 +1,64 @@
+=== SCENE ANALYSIS REPORT ===
+
+Video: .\object_in_water.mp4
+Duration: 11.6 seconds
+
+--- CONTEXT ---
+Domain: underwater
+Platform: ROV
+Camera: documentary GoPro wide-angle
+Constraints: realism, smooth motion, stable color palette, faithful reconstruction
+
+--- ENVIRONMENT ---
+Water color: turquoise-green
+Visibility: poor visibility
+Particulate: minimal particulate
+Seafloor: unknown
+Lighting: ambient underwater lighting
+
+--- MAIN SUBJECT ---
+Hypothesis: unknown (no ROI captions available)
+Appearance: unknown
+Details: none noted
+Confidence: 0%
+
+--- CAMERA MOTION ---
+  [0.5s - 1.3s]: truck_right + push_in
+  [1.3s - 1.9s]: truck_right + pedestal_up + pull_out + pan_left
+  [1.9s - 2.5s]: pedestal_up + pull_out
+  [2.5s - 3.2s]: pedestal_up + pull_out + pan_left
+  [3.2s - 3.8s]: pan_right + pedestal_down + pull_out + truck_left
+  [3.8s - 4.4s]: pedestal_up + pull_out + pan_left
+  [4.4s - 5.1s]: pan_right + pull_out + truck_left
+  [5.1s - 7.0s]: pedestal_up + pull_out + truck_left + pan_left
+  [7.0s - 7.6s]: pedestal_up + pull_out + pan_left
+  [7.6s - 8.2s]: pull_out + truck_left + pan_left
+  [8.2s - 8.9s]: pedestal_down + pan_right + truck_left
+  [8.9s - 9.5s]: push_in + pedestal_down + pan_right
+  [9.5s - 10.1s]: push_in + pedestal_down + pan_right + truck_left
+  [10.1s - 10.8s]: push_in + pedestal_down + pan_right
+  [10.8s - 11.4s]: push_in + pan_left
+
+--- NEGATIVE EVIDENCE ---
+People detected: True
+Fish detected: False
+
+--- KEYFRAME CAPTIONS ---
+  t=0.0s:
+  t=2.5s:
+  t=5.7s:
+  t=8.2s:
+  t=11.4s:
+
+--- PROCESSING NOTES ---
+  • Motion types detected: push_in, pedestal_down, pan_left, truck_right, pan_right, pedestal_up, pull_out, truck_left
+  • ROIs tracked: 1
+  • Keyframes captioned: 0
+
+=== GENERATED PROMPT ===
+
+Final Prompt:
+Underwater ROV documentary footage in turquoise-green water with poor visibility. Complex camera sequence: smooth push-in and lateral truck movement right, followed by combined pedestal up, pull-out, and panning left, then multiple alternating vertical and lateral movements with pans in both directions, ending with push-in and pan left. Ambient underwater lighting, minimal particulate matter, documentary GoPro wide-angle style with smooth professional camera motion throughout.
+
+Negative Prompt:
+Clear blue water, artificial lighting, surface reflections, fish or marine life, people, text overlays, shaky erratic camera motion, bright saturated colors, close-up details, coral reefs, rocks, wreckage, synthetic appearance, CGI elements
