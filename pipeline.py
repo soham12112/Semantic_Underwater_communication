@@ -56,7 +56,10 @@ class VideoPipeline:
         self.preprocessor = UnderwaterPreprocessor(self.config.preprocess)
         self.motion_analyzer = MotionAnalyzer(self.config.motion)
         self.roi_discoverer = ROIDiscovery(self.config.roi)
-        self.captioner = SemanticCaptioner(self.config.caption)
+        self.captioner = SemanticCaptioner(
+            self.config.caption,
+            scene_hint=self.config.context.scene_hint
+        )
         self.report_assembler = SceneReportAssembler(self.config)
         self.llm_synthesizer = LLMPromptSynthesizer(
             self.config.llm, 
@@ -235,7 +238,7 @@ class VideoPipeline:
         frames: List[EnhancedFrameResult],
         rois: List[ROIData]
     ) -> Tuple[List[np.ndarray], List[KeyframeCaption]]:
-        """Stage E: Caption selected keyframes."""
+        """Stage E: Caption selected keyframes using MiniMax Vision or BLIP-2."""
         # Select keyframes evenly distributed
         n_keyframes = min(self.config.caption.frames_per_event, len(frames))
         if n_keyframes == 0:
@@ -243,13 +246,16 @@ class VideoPipeline:
         
         indices = np.linspace(0, len(frames) - 1, n_keyframes, dtype=int)
         
-        keyframes = []
-        captions = []
+        # Build list of (timestamp, frame) tuples for captioning
+        keyframe_data = []
+        matching_rois = []
+        keyframe_images = []
         
         for i in indices:
             frame = frames[i].enhanced
             timestamp = frames[i].timestamp
-            keyframes.append(frame)
+            keyframe_images.append(frame)
+            keyframe_data.append((timestamp, frame))
             
             # Find matching ROI
             matching_roi = None
@@ -257,13 +263,12 @@ class VideoPipeline:
                 if abs(roi.timestamp - timestamp) < 0.5:
                     matching_roi = roi
                     break
-            
-            caption = self.captioner.caption_frame_and_roi(
-                frame, matching_roi, timestamp
-            )
-            captions.append(caption)
+            matching_rois.append(matching_roi)
         
-        return keyframes, captions
+        # Use caption_keyframes which handles MiniMax Vision vs BLIP-2
+        captions = self.captioner.caption_keyframes(keyframe_data, matching_rois)
+        
+        return keyframe_images, captions
     
     def _detect_objects(
         self,
@@ -454,6 +459,7 @@ def main():
     if args.no_caption:
         config.caption.caption_global = False
         config.caption.caption_roi = False
+        config.caption.use_minimax_vision = False  # Also disable MiniMax Vision
     
     if args.cpu:
         config.caption.device = "cpu"

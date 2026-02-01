@@ -16,7 +16,7 @@ import json
 import logging
 import os
 import requests
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 
 from config import LLMConfig, ContextTemplate
@@ -330,7 +330,24 @@ class LLMPromptSynthesizer:
         }
     
     def _extract_json(self, text: str) -> str:
-        """Extract JSON from text that may contain markdown or extra text."""
+        """Extract JSON from text that may contain markdown, thinking blocks, or extra text."""
+        import re
+        
+        text = text.strip()
+        
+        # Remove MiniMax M2.1 thinking blocks: <think>...</think>
+        # Handle both complete and incomplete thinking blocks
+        text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+        # Also handle unclosed <think> blocks (response truncated)
+        if '<think>' in text:
+            think_start = text.find('<think>')
+            # Try to find JSON after the thinking
+            json_start = text.find('{', think_start)
+            if json_start != -1:
+                text = text[json_start:]
+            else:
+                # No JSON found, remove everything from <think> onwards
+                text = text[:think_start]
         text = text.strip()
         
         # Remove markdown code blocks
@@ -423,66 +440,165 @@ class LLMPromptSynthesizer:
     
     def _fallback_synthesis(self, report: SceneReport) -> LLMPromptOutput:
         """
-        Generate prompt without LLM (rule-based fallback).
+        Generate detailed cinematic prompt without LLM (rule-based fallback).
         
-        Used when LLM is unavailable.
+        Produces high-quality prompts similar to:
+        "Underwater POV, muted turquoise-green water with slight haze..."
         """
         logger.info("Using fallback prompt synthesis (no LLM)")
         
-        # Build prompt from report components
-        parts = []
+        # Build detailed cinematic prompt
+        prompt_parts = []
         
-        # Camera motion
-        if report.camera_motion:
-            motion_descs = []
-            for seg in report.camera_motion[:3]:  # First 3 segments
-                label = " and ".join(seg.labels).replace("_", " ")
-                motion_descs.append(label)
-            parts.append(f"Camera motion: {', then '.join(motion_descs)}.")
-        
-        # Environment
+        # 1. POV and water description
         env = report.environment
-        env_desc = f"{env.water_color} water with {env.visibility}"
-        if env.particulate and env.particulate != "unknown":
-            env_desc += f", {env.particulate}"
-        parts.append(f"Environment: {env_desc}.")
+        water_desc = f"Underwater POV, muted {env.water_color} water"
+        if env.visibility and env.visibility != "unknown":
+            if "poor" in env.visibility.lower() or "haze" in env.visibility.lower():
+                water_desc += " with slight haze"
+            elif "clear" in env.visibility.lower():
+                water_desc += ", clear visibility"
+        if env.particulate and "particulate" in env.particulate.lower():
+            if "minimal" in env.particulate.lower():
+                water_desc += " and minimal floating particulate"
+            else:
+                water_desc += " and floating particulate"
+        prompt_parts.append(water_desc + ".")
         
-        # Subject
+        # 2. Seafloor description
+        if env.seafloor:
+            seafloor_str = ", ".join(env.seafloor)
+            prompt_parts.append(f"The camera glides low over a {seafloor_str}.")
+        else:
+            prompt_parts.append("The camera glides through the underwater environment.")
+        
+        # 3. Main subject description (detailed)
         subj = report.main_subject
         if subj.hypothesis and "unknown" not in subj.hypothesis.lower():
-            subj_desc = subj.hypothesis
+            # Build detailed subject description
+            subj_parts = []
+            
+            # Type of subject
+            if "statue" in subj.hypothesis.lower():
+                subj_parts.append("a weathered statue")
+            elif "sculpture" in subj.hypothesis.lower():
+                subj_parts.append("an underwater sculpture")
+            else:
+                subj_parts.append(f"a {subj.hypothesis.split('(')[0].strip()}")
+            
+            # Appearance details
             if subj.appearance:
-                subj_desc += f" ({', '.join(subj.appearance[:2])})"
-            parts.append(f"Subject: {subj_desc}.")
+                appearance_str = ", ".join(subj.appearance[:4])
+                subj_parts.append(f"({appearance_str})")
+            
+            # Position
+            if any("buried" in a.lower() for a in subj.appearance):
+                subj_parts.append("partially buried in the sand")
+            
+            subj_desc = " ".join(subj_parts)
+            prompt_parts.append(f"Ahead, {subj_desc} emerges into view.")
+            
+            # Notable details
+            if subj.notable_details:
+                details = [d for d in subj.notable_details if "Movement" not in d]
+                if details:
+                    detail_str = "; ".join(details[:3])
+                    prompt_parts.append(f"Details visible: {detail_str}.")
         
-        # Style
-        parts.append(f"Style: {report.context.camera_style}, documentary underwater footage.")
+        # 4. Camera motion sequence (cinematic terms)
+        if report.camera_motion:
+            motion_desc = self._describe_motion_sequence(report.camera_motion)
+            prompt_parts.append(motion_desc)
         
-        final_prompt = " ".join(parts)
+        # 5. Style footer
+        style_parts = [
+            "Natural underwater lighting",
+            "documentary GoPro look",
+            "smooth motion",
+            "realistic colors"
+        ]
+        if not report.negatives.people_detected:
+            style_parts.append("no people")
+        if report.negatives.fish_detected is False:
+            style_parts.append("no fish")
+        
+        prompt_parts.append(", ".join(style_parts) + ".")
+        
+        final_prompt = " ".join(prompt_parts)
         
         # Build negative prompt
-        negatives = ["blurry", "shaky", "artificial", "CGI"]
+        negatives = [
+            "blurry", "shaky", "artificial lighting", "CGI",
+            "unrealistic colors", "cartoon", "anime", "painting"
+        ]
         if not report.negatives.people_detected:
-            negatives.append("people")
-            negatives.append("divers")
+            negatives.extend(["people", "divers", "swimmers"])
         if report.negatives.fish_detected is False:
-            negatives.append("fish")
-            negatives.append("marine life")
+            negatives.extend(["fish", "marine life", "sea creatures"])
         
         negative_prompt = ", ".join(negatives)
         
         return LLMPromptOutput(
             final_prompt=final_prompt,
             negative_prompt=negative_prompt,
-            confidence_notes=["Generated using rule-based fallback (no LLM)"],
+            confidence_notes=[
+                "Generated using detailed rule-based synthesis",
+                f"Subject confidence: {report.main_subject.confidence:.0%}"
+            ],
             used_evidence=[
                 f"motion_segments: {len(report.camera_motion)}",
                 f"keyframes: {len(report.keyframes)}",
-                f"subject_confidence: {report.main_subject.confidence:.0%}"
+                f"subject: {report.main_subject.hypothesis}"
             ],
             suggested_duration_sec=min(report.duration_sec, 4.0),
-            style_tags=["documentary", "underwater", "ROV", report.context.camera_style]
+            style_tags=["documentary", "underwater", "ROV", "GoPro", "cinematic"]
         )
+    
+    def _describe_motion_sequence(self, segments: List) -> str:
+        """Convert motion segments to cinematic description."""
+        if not segments:
+            return ""
+        
+        # Group into phases
+        phases = []
+        
+        # Take first few segments for description
+        for i, seg in enumerate(segments[:4]):
+            labels = seg.labels
+            duration = seg.t1 - seg.t0
+            
+            # Convert labels to cinematic terms
+            motions = []
+            for label in labels:
+                if "push_in" in label:
+                    motions.append("Push in")
+                elif "pull_out" in label:
+                    motions.append("Pull back")
+                elif "pedestal_up" in label:
+                    motions.append("Pedestal up")
+                elif "pedestal_down" in label:
+                    motions.append("Pedestal down")
+                elif "truck_right" in label:
+                    motions.append("Truck right")
+                elif "truck_left" in label:
+                    motions.append("Truck left")
+                elif "pan_left" in label:
+                    motions.append("Pan left")
+                elif "pan_right" in label:
+                    motions.append("Pan right")
+                elif "static" in label:
+                    motions.append("Static hold")
+            
+            if motions:
+                motion_str = ", ".join(motions)
+                phases.append(f"[{motion_str}]")
+        
+        if len(phases) == 1:
+            return f"Camera movement: {phases[0]}."
+        elif len(phases) == 2:
+            return f"Camera slowly {phases[0].lower()}, then {phases[1].lower()}."
+        else:
+            return f"Camera sequence: {phases[0]}, then {phases[1]}, finally {phases[2]}."
 
 
 def synthesize_prompt(

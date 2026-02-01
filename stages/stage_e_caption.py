@@ -5,10 +5,16 @@ Generates captions for:
 - Global frames (environment/scene)
 - ROI crops (main subject)
 
-Uses BLIP-2 or similar model as weak semantic signal.
+Supports:
+- MiniMax Vision API (recommended for underwater - fast and accurate)
+- BLIP-2 (slower, runs on CPU)
 """
 import cv2
 import numpy as np
+import base64
+import json
+import os
+import requests
 from typing import List, Tuple, Optional, Dict, Any
 from pathlib import Path
 from dataclasses import dataclass
@@ -63,17 +69,269 @@ def _load_caption_model(config: CaptionConfig):
         return False
 
 
+class MiniMaxVisionCaptioner:
+    """
+    Use MiniMax Vision API to analyze frames and ROIs.
+    
+    Much faster than BLIP-2 on CPU and better for underwater scenes.
+    Specifically trained to recognize statues, sculptures, marine life, etc.
+    """
+    
+    def __init__(
+        self, 
+        model: str = "MiniMax-Text-01",
+        scene_hint: str = ""
+    ):
+        self.api_key = os.getenv("MINIMAX_API_KEY", "")
+        self.base_url = "https://api.minimax.io/v1/chat/completions"
+        self.model = model
+        self.scene_hint = scene_hint
+        self._available = bool(self.api_key)
+        
+        if not self._available:
+            logger.warning("MiniMax Vision not available: MINIMAX_API_KEY not set")
+    
+    @property
+    def is_available(self) -> bool:
+        return self._available
+    
+    def _encode_image(self, image: np.ndarray) -> str:
+        """Encode numpy image to base64 JPEG."""
+        _, buffer = cv2.imencode('.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        return base64.b64encode(buffer).decode('utf-8')
+    
+    def _call_api(self, user_content: str) -> Optional[str]:
+        """Make MiniMax API call with vision content."""
+        if not self._available:
+            return None
+        
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are an expert at analyzing underwater video frames. Return ONLY valid JSON responses."
+                },
+                {
+                    "role": "user",
+                    "content": user_content
+                }
+            ],
+            "temperature": 0.1,
+            "max_tokens": 1024
+        }
+        
+        try:
+            response = requests.post(
+                self.base_url, 
+                headers=headers, 
+                json=payload, 
+                timeout=60
+            )
+            result = response.json()
+            
+            if "error" in result:
+                logger.error(f"MiniMax Vision API error: {result['error']}")
+                return None
+            
+            if "choices" not in result or len(result["choices"]) == 0:
+                logger.error(f"Unexpected MiniMax response: {result}")
+                return None
+            
+            return result["choices"][0]["message"]["content"]
+            
+        except Exception as e:
+            logger.error(f"MiniMax Vision API call failed: {e}")
+            return None
+    
+    def _extract_json(self, text: str) -> str:
+        """Extract JSON from text that may contain markdown."""
+        text = text.strip()
+        
+        if text.startswith("```"):
+            lines = text.split('\n')
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].strip() == "```":
+                lines = lines[:-1]
+            text = '\n'.join(lines)
+        
+        start_idx = text.find('{')
+        end_idx = text.rfind('}')
+        
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            return text[start_idx:end_idx + 1]
+        
+        return text
+    
+    def analyze_frame(
+        self,
+        frame: np.ndarray,
+        roi: Optional[ROIData] = None,
+        timestamp: float = 0.0
+    ) -> KeyframeCaption:
+        """
+        Analyze a frame using MiniMax Vision.
+        
+        Args:
+            frame: Full frame image (BGR)
+            roi: Optional ROI to focus on
+            timestamp: Frame timestamp
+            
+        Returns: KeyframeCaption with descriptions
+        """
+        if not self._available:
+            return KeyframeCaption(timestamp=timestamp)
+        
+        # Encode frame
+        frame_b64 = self._encode_image(frame)
+        
+        # Build ROI info
+        roi_info = ""
+        if roi:
+            roi_info = f"\nFocus on the region at bbox [{roi.x}, {roi.y}, {roi.x + roi.width}, {roi.y + roi.height}]."
+        
+        # Build prompt
+        scene_context = f"\nScene context: {self.scene_hint}\n" if self.scene_hint else ""
+        
+        prompt = f"""Analyze this underwater video frame.
+{scene_context}{roi_info}
+
+Identify what you see and provide descriptions.
+
+Labels to consider: ["fish", "shark", "ship", "human", "statue", "coral", "debris", "none"]
+- "statue" = underwater sculpture, bust, figure, art installation (may have gestures)
+- "human" = actual living person, diver  
+- "debris" = wreckage, man-made objects on seabed
+
+IMPORTANT: Look carefully for human-made objects like statues or sculptures.
+
+Return ONLY valid JSON:
+{{
+    "global_description": "Brief description of the overall scene",
+    "main_subject": {{
+        "label": "statue|fish|coral|human|debris|none",
+        "confidence": 0.0 to 1.0,
+        "description": "Detailed description of the main subject"
+    }},
+    "environment": {{
+        "water_color": "description of water color",
+        "visibility": "clear|hazy|murky",
+        "seafloor": "description of seafloor if visible"
+    }}
+}}"""
+
+        user_content = f"[Image base64:{frame_b64}]\n\n{prompt}"
+        
+        response = self._call_api(user_content)
+        
+        if response is None:
+            return KeyframeCaption(timestamp=timestamp)
+        
+        try:
+            json_text = self._extract_json(response)
+            data = json.loads(json_text)
+            
+            global_caption = data.get("global_description", "")
+            
+            # Build ROI caption from main subject
+            roi_caption = None
+            main_subject = data.get("main_subject", {})
+            if main_subject:
+                label = main_subject.get("label", "")
+                desc = main_subject.get("description", "")
+                conf = main_subject.get("confidence", 0)
+                if label and label != "none":
+                    roi_caption = f"{label}: {desc} (confidence: {conf:.0%})"
+                elif desc:
+                    roi_caption = desc
+            
+            # Extract detected objects
+            detected = []
+            if main_subject.get("label") and main_subject["label"] != "none":
+                detected.append(main_subject["label"])
+            
+            return KeyframeCaption(
+                timestamp=timestamp,
+                global_caption=global_caption,
+                roi_caption=roi_caption,
+                detected_objects=detected
+            )
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse MiniMax response: {e}")
+            return KeyframeCaption(
+                timestamp=timestamp,
+                global_caption=response[:200] if response else None
+            )
+    
+    def analyze_keyframes(
+        self,
+        frames: List[Tuple[float, np.ndarray]],
+        rois: Optional[List[Optional[ROIData]]] = None
+    ) -> List[KeyframeCaption]:
+        """
+        Analyze multiple keyframes.
+        
+        Args:
+            frames: List of (timestamp, frame) tuples
+            rois: Optional list of ROIs per frame
+            
+        Returns: List of KeyframeCaption
+        """
+        if not self._available:
+            return [KeyframeCaption(timestamp=t) for t, _ in frames]
+        
+        if rois is None:
+            rois = [None] * len(frames)
+        
+        results = []
+        for i, (timestamp, frame) in enumerate(frames):
+            roi = rois[i] if i < len(rois) else None
+            caption = self.analyze_frame(frame, roi, timestamp)
+            results.append(caption)
+            logger.info(f"  Analyzed keyframe at {timestamp:.1f}s")
+        
+        return results
+
+
 class SemanticCaptioner:
     """
     Stage E: Generate semantic captions for frames and ROIs.
+    
+    Supports:
+    - MiniMax Vision API (fast, recommended for underwater)
+    - BLIP-2 (slow CPU fallback)
     
     Provides weak signals about scene content that feed into
     the structured scene report.
     """
     
-    def __init__(self, config: Optional[CaptionConfig] = None):
+    def __init__(
+        self, 
+        config: Optional[CaptionConfig] = None,
+        scene_hint: str = ""
+    ):
         self.config = config or CaptionConfig()
         self._model_loaded = False
+        self._minimax_captioner: Optional[MiniMaxVisionCaptioner] = None
+        self.scene_hint = scene_hint
+        
+        # Initialize MiniMax Vision if configured
+        if self.config.use_minimax_vision:
+            self._minimax_captioner = MiniMaxVisionCaptioner(
+                model=self.config.minimax_vision_model,
+                scene_hint=scene_hint
+            )
+            if self._minimax_captioner.is_available:
+                logger.info("Using MiniMax Vision for captioning (fast mode)")
+            else:
+                logger.info("MiniMax Vision not available, will use BLIP-2 fallback")
     
     def _ensure_model(self) -> bool:
         """Ensure caption model is loaded."""
@@ -251,12 +509,23 @@ class SemanticCaptioner:
         """
         Caption multiple keyframes.
         
+        Uses MiniMax Vision if available (fast), otherwise BLIP-2 (slow).
+        
         Args:
             frames: List of (timestamp, frame) tuples
             rois: Optional list of ROIs (one per frame, or None)
             
         Returns: List of KeyframeCaption objects
         """
+        # Try MiniMax Vision first (fast)
+        if (self._minimax_captioner is not None and 
+            self._minimax_captioner.is_available):
+            logger.info("Using MiniMax Vision for keyframe analysis...")
+            return self._minimax_captioner.analyze_keyframes(frames, rois)
+        
+        # Fallback to BLIP-2 (slow)
+        logger.info("Using BLIP-2 for keyframe captioning (slow)...")
+        
         if rois is None:
             rois = [None] * len(frames)
         

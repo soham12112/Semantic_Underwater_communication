@@ -62,6 +62,9 @@ class CaptionConfig:
     frames_per_event: int = 5
     caption_roi: bool = True
     caption_global: bool = True
+    # MiniMax Vision for ROI analysis (faster than BLIP-2, better for underwater)
+    use_minimax_vision: bool = True
+    minimax_vision_model: str = "MiniMax-Text-01"  # Vision-capable model
 
 
 @dataclass
@@ -99,6 +102,13 @@ class ContextTemplate:
         "shaky/erratic motion"
     ])
     target_duration: str = "2-4 seconds"
+    # Scene hint helps models understand what to look for in underwater footage
+    scene_hint: str = (
+        "This is underwater footage that may contain: statues, sculptures, "
+        "underwater art installations with hand gestures (like OK sign, peace sign, mudras), "
+        "divers, marine life, coral, or shipwrecks. Look carefully for human-made objects "
+        "like statues or sculptures partially buried in sand."
+    )
 
 
 @dataclass

@@ -13,31 +13,31 @@ Constraints: realism, smooth motion, stable color palette, faithful reconstructi
 Water color: turquoise-green
 Visibility: poor visibility
 Particulate: minimal particulate
-Seafloor: unknown
-Lighting: ambient underwater lighting
+Seafloor: sandy bottom
+Lighting: clear natural light
 
 --- MAIN SUBJECT ---
-Hypothesis: unknown (no ROI captions available)
-Appearance: unknown
-Details: none noted
-Confidence: 0%
+Hypothesis: statue (from ROI captions)
+Appearance: sediment, covered, weathered, partially buried, algae
+Details: facial features, arm/limb visible
+Confidence: 50%
 
 --- CAMERA MOTION ---
   [0.5s - 1.3s]: truck_right + push_in
-  [1.3s - 1.9s]: truck_right + pedestal_up + pull_out + pan_left
-  [1.9s - 2.5s]: pedestal_up + pull_out
-  [2.5s - 3.2s]: pedestal_up + pull_out + pan_left
-  [3.2s - 3.8s]: pan_right + pedestal_down + pull_out + truck_left
-  [3.8s - 4.4s]: pedestal_up + pull_out + pan_left
-  [4.4s - 5.1s]: pan_right + pull_out + truck_left
-  [5.1s - 7.0s]: pedestal_up + pull_out + truck_left + pan_left
-  [7.0s - 7.6s]: pedestal_up + pull_out + pan_left
-  [7.6s - 8.2s]: pull_out + truck_left + pan_left
-  [8.2s - 8.9s]: pedestal_down + pan_right + truck_left
-  [8.9s - 9.5s]: push_in + pedestal_down + pan_right
-  [9.5s - 10.1s]: push_in + pedestal_down + pan_right + truck_left
-  [10.1s - 10.8s]: push_in + pedestal_down + pan_right
-  [10.8s - 11.4s]: push_in + pan_left
+  [1.3s - 1.9s]: truck_right + pull_out + pan_left + pedestal_up
+  [1.9s - 2.5s]: pull_out + pedestal_up
+  [2.5s - 3.2s]: pan_left + pull_out + pedestal_up
+  [3.2s - 3.8s]: pedestal_down + truck_left + pull_out + pan_right
+  [3.8s - 4.4s]: pan_left + pull_out + pedestal_up
+  [4.4s - 5.1s]: pan_right + truck_left + pull_out
+  [5.1s - 7.0s]: pan_left + truck_left + pull_out + pedestal_up
+  [7.0s - 7.6s]: pan_left + pull_out + pedestal_up
+  [7.6s - 8.2s]: truck_left + pull_out + pan_left
+  [8.2s - 8.9s]: pedestal_down + truck_left + pan_right
+  [8.9s - 9.5s]: pedestal_down + pan_right + push_in
+  [9.5s - 10.1s]: pedestal_down + truck_left + pan_right + push_in
+  [10.1s - 10.8s]: pedestal_down + pan_right + push_in
+  [10.8s - 11.4s]: pan_left + push_in
 
 --- NEGATIVE EVIDENCE ---
 People detected: True
@@ -45,20 +45,30 @@ Fish detected: False
 
 --- KEYFRAME CAPTIONS ---
   t=0.0s:
+    Global: The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand, surrounded by clear water and minimal marine life.
+    ROI: statue: A large statue is partially buried in the sand, with distinct features visible such as a face and torso. The statue appears to be made of stone or concrete and has a weathered appearance, suggesting it has been underwater for some time. (confidence: 95%)
   t=2.5s:
+    Global: The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand. The statue appears to be a human figure with outstretched arms, possibly depicting a gesture or pose. There is moderate visibility in the water, and the surroundings are mostly clear of other significant objects or marine life.
+    ROI: statue: The main subject is a statue of a human figure partially buried in the sand. The statue has outstretched arms, suggesting a gesture or pose, and appears to be made of stone or a similar material. The details of the statue are somewhat obscured by sediment and water, but the overall form is clearly recognizable as a human figure. (confidence: 95%)
   t=5.7s:
+    Global: The scene depicts an underwater environment with a prominent statue partially buried in the sand, surrounded by clear water and a sandy seafloor.
+    ROI: statue: The main subject is a human-like statue partially buried in the sand. The statue appears to be a figure with arms extended, possibly in a gesture, and is covered in algae or marine growth, indicating it has been underwater for some time. (confidence: 95%)
   t=8.2s:
+    Global: The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand, surrounded by clear water with good visibility.
+    ROI: statue: The main subject is a human-like statue partially buried in the sand. The statue appears to be a figure with arms outstretched, possibly depicting a gesture or pose. The statue is covered in marine growth, indicating it has been underwater for some time. (confidence: 95%)
   t=11.4s:
+    Global: The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand. The statue appears to be a human figure with arms outstretched, possibly depicting a gesture or pose.
+    ROI: statue: The main subject is a statue of a human figure partially buried in the sand. The statue has outstretched arms, suggesting a gesture or pose, and appears to be made of stone or concrete. The details of the face and body are partially obscured by sediment and marine growth. (confidence: 95%)
 
 --- PROCESSING NOTES ---
-  • Motion types detected: push_in, pedestal_down, pan_left, truck_right, pan_right, pedestal_up, pull_out, truck_left
+  • Motion types detected: truck_right, pan_right, push_in, pedestal_down, truck_left, pedestal_up, pan_left, pull_out
   • ROIs tracked: 1
-  • Keyframes captioned: 0
+  • Keyframes captioned: 5
 
 === GENERATED PROMPT ===
 
 Final Prompt:
-Underwater ROV documentary footage in turquoise-green water with poor visibility. Complex camera sequence: smooth push-in and lateral truck movement right, followed by combined pedestal up, pull-out, and panning left, then multiple alternating vertical and lateral movements with pans in both directions, ending with push-in and pan left. Ambient underwater lighting, minimal particulate matter, documentary GoPro wide-angle style with smooth professional camera motion throughout.
+Underwater ROV documentary footage of a weathered statue/figurine of a human figure partially buried in a sandy seafloor, covered in sediment and marine growth with outstretched arms visible. The water is turquoise-green with poor visibility, clear natural lighting from above, and minimal particulate matter. Camera performs an exploratory sequence combining lateral tracking movements, pulls back while tilting up, and pans left to frame the statue from different angles.
 
 Negative Prompt:
-Clear blue water, artificial lighting, surface reflections, fish or marine life, people, text overlays, shaky erratic camera motion, bright saturated colors, close-up details, coral reefs, rocks, wreckage, synthetic appearance, CGI elements
+No people visible in frame, no fish or marine life, no artificial lighting, no neon or saturated colors, no stabilization, no smooth camera movements, no CGI effects, no text overlays

@@ -1,27 +1,24 @@
 {
-  "final_prompt": "Underwater ROV documentary footage in turquoise-green water with poor visibility. Complex camera sequence: smooth push-in and lateral truck movement right, followed by combined pedestal up, pull-out, and panning left, then multiple alternating vertical and lateral movements with pans in both directions, ending with push-in and pan left. Ambient underwater lighting, minimal particulate matter, documentary GoPro wide-angle style with smooth professional camera motion throughout.",
-  "negative_prompt": "Clear blue water, artificial lighting, surface reflections, fish or marine life, people, text overlays, shaky erratic camera motion, bright saturated colors, close-up details, coral reefs, rocks, wreckage, synthetic appearance, CGI elements",
+  "final_prompt": "Underwater ROV documentary footage of a weathered statue/figurine of a human figure partially buried in a sandy seafloor, covered in sediment and marine growth with outstretched arms visible. The water is turquoise-green with poor visibility, clear natural lighting from above, and minimal particulate matter. Camera performs an exploratory sequence combining lateral tracking movements, pulls back while tilting up, and pans left to frame the statue from different angles.",
+  "negative_prompt": "No people visible in frame, no fish or marine life, no artificial lighting, no neon or saturated colors, no stabilization, no smooth camera movements, no CGI effects, no text overlays",
   "confidence_notes": [
-    "Main subject unidentified - no objects detected at keyframes, footage may show empty water or environment without prominent subject",
-    "People were detected but not specified in ROI captions - uncertain if they appear in this segment",
-    "Motion smoothness drops to 0.255 between 5.1-7.0s suggesting potential camera shake"
+    "Main subject identified as statue with high confidence (95%) from ROI captions despite lower hypothesis confidence (0.5)",
+    "Camera motion labels are derived from reliable motion analysis algorithms",
+    "Water color and visibility are explicitly documented",
+    "No fish or people detected in negatives section confirms safe to exclude"
   ],
   "used_evidence": [
-    "Turquoise-green water color from environment analysis",
-    "Poor visibility condition",
-    "Minimal particulate matter",
-    "Complex multi-axis camera motion sequence with smoothness values",
-    "Documentary GoPro wide-angle camera style",
-    "Unknown main subject hypothesis with 0.0 confidence",
-    "People detected but no fish/artificial light/text"
+    "Keyframe ROI captions for statue appearance: weathered, partially buried, sediment, algae, outstretched arms, facial features",
+    "Environment descriptors: turquoise-green water, poor visibility, sandy bottom, minimal particulate",
+    "Camera motion labels from motion analysis with smoothness scores",
+    "Negatives: no people, fish, text, or artificial light detected"
   ],
-  "suggested_duration_sec": 4.0,
+  "suggested_duration_sec": 3.0,
   "style_tags": [
     "documentary",
     "underwater",
-    "ROV footage",
-    "wide-angle",
-    "ambient lighting",
-    "complex camera motion"
+    "ROV",
+    "archaeological",
+    "exploratory"
   ]
 }

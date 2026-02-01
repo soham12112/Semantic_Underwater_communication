@@ -16,14 +16,25 @@
     "water_color": "turquoise-green",
     "visibility": "poor visibility",
     "particulate": "minimal particulate",
-    "seafloor": [],
-    "lighting": "ambient underwater lighting"
+    "seafloor": [
+      "sandy bottom"
+    ],
+    "lighting": "clear natural light"
   },
   "main_subject": {
-    "hypothesis": "unknown (no ROI captions available)",
-    "appearance": [],
-    "notable_details": [],
-    "confidence": 0.0
+    "hypothesis": "statue (from ROI captions)",
+    "appearance": [
+      "sediment",
+      "covered",
+      "weathered",
+      "partially buried",
+      "algae"
+    ],
+    "notable_details": [
+      "facial features",
+      "arm/limb visible"
+    ],
+    "confidence": 0.5
   },
   "camera_motion": [
     {
@@ -41,9 +52,9 @@
       "t1": 1.9019,
       "labels": [
         "truck_right",
-        "pedestal_up",
         "pull_out",
-        "pan_left"
+        "pan_left",
+        "pedestal_up"
       ],
       "magnitude": 52.97068600144507,
       "smoothness": 1.0
@@ -52,8 +63,8 @@
       "t0": 1.9019,
       "t1": 2.5358666666666667,
       "labels": [
-        "pedestal_up",
-        "pull_out"
+        "pull_out",
+        "pedestal_up"
       ],
       "magnitude": 26.047156690015235,
       "smoothness": 1.0
@@ -62,9 +73,9 @@
       "t0": 2.5358666666666667,
       "t1": 3.1698333333333335,
       "labels": [
-        "pedestal_up",
+        "pan_left",
         "pull_out",
-        "pan_left"
+        "pedestal_up"
       ],
       "magnitude": 42.07701982215929,
       "smoothness": 1.0
@@ -73,10 +84,10 @@
       "t0": 3.1698333333333335,
       "t1": 3.8038,
       "labels": [
-        "pan_right",
         "pedestal_down",
+        "truck_left",
         "pull_out",
-        "truck_left"
+        "pan_right"
       ],
       "magnitude": 48.61055312324184,
       "smoothness": 1.0
@@ -85,9 +96,9 @@
       "t0": 3.8038,
       "t1": 4.437766666666667,
       "labels": [
-        "pedestal_up",
+        "pan_left",
         "pull_out",
-        "pan_left"
+        "pedestal_up"
       ],
       "magnitude": 62.898876296868,
       "smoothness": 1.0
@@ -97,8 +108,8 @@
       "t1": 5.071733333333333,
       "labels": [
         "pan_right",
-        "pull_out",
-        "truck_left"
+        "truck_left",
+        "pull_out"
       ],
       "magnitude": 72.6219380577103,
       "smoothness": 1.0
@@ -107,10 +118,10 @@
       "t0": 5.071733333333333,
       "t1": 6.973633333333334,
       "labels": [
-        "pedestal_up",
-        "pull_out",
+        "pan_left",
         "truck_left",
-        "pan_left"
+        "pull_out",
+        "pedestal_up"
       ],
       "magnitude": 118.55269805126737,
       "smoothness": 0.25520379918942543
@@ -119,9 +130,9 @@
       "t0": 6.973633333333334,
       "t1": 7.6076,
       "labels": [
-        "pedestal_up",
+        "pan_left",
         "pull_out",
-        "pan_left"
+        "pedestal_up"
       ],
       "magnitude": 68.71582017830062,
       "smoothness": 1.0
@@ -130,8 +141,8 @@
       "t0": 7.6076,
       "t1": 8.241566666666667,
       "labels": [
-        "pull_out",
         "truck_left",
+        "pull_out",
         "pan_left"
       ],
       "magnitude": 52.56208412772357,
@@ -142,8 +153,8 @@
       "t1": 8.875533333333333,
       "labels": [
         "pedestal_down",
-        "pan_right",
-        "truck_left"
+        "truck_left",
+        "pan_right"
       ],
       "magnitude": 120.05038123721555,
       "smoothness": 1.0
@@ -152,9 +163,9 @@
       "t0": 8.875533333333333,
       "t1": 9.509500000000001,
       "labels": [
-        "push_in",
         "pedestal_down",
-        "pan_right"
+        "pan_right",
+        "push_in"
       ],
       "magnitude": 93.4864427711305,
       "smoothness": 1.0
@@ -163,10 +174,10 @@
       "t0": 9.509500000000001,
       "t1": 10.143466666666667,
       "labels": [
-        "push_in",
         "pedestal_down",
+        "truck_left",
         "pan_right",
-        "truck_left"
+        "push_in"
       ],
       "magnitude": 104.61993289642442,
       "smoothness": 1.0
@@ -175,9 +186,9 @@
       "t0": 10.143466666666667,
       "t1": 10.777433333333333,
       "labels": [
-        "push_in",
         "pedestal_down",
-        "pan_right"
+        "pan_right",
+        "push_in"
       ],
       "magnitude": 41.27421329596939,
       "smoothness": 1.0
@@ -186,8 +197,8 @@
       "t0": 10.777433333333333,
       "t1": 11.4114,
       "labels": [
-        "push_in",
-        "pan_left"
+        "pan_left",
+        "push_in"
       ],
       "magnitude": 13.816246103839475,
       "smoothness": 1.0
@@ -202,38 +213,48 @@
   "keyframes": [
     {
       "timestamp": 0.0,
-      "global_caption": null,
-      "roi_caption": null,
-      "detected_objects": []
+      "global_caption": "The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand, surrounded by clear water and minimal marine life.",
+      "roi_caption": "statue: A large statue is partially buried in the sand, with distinct features visible such as a face and torso. The statue appears to be made of stone or concrete and has a weathered appearance, suggesting it has been underwater for some time. (confidence: 95%)",
+      "detected_objects": [
+        "statue"
+      ]
     },
     {
       "timestamp": 2.5358666666666667,
-      "global_caption": null,
-      "roi_caption": null,
-      "detected_objects": []
+      "global_caption": "The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand. The statue appears to be a human figure with outstretched arms, possibly depicting a gesture or pose. There is moderate visibility in the water, and the surroundings are mostly clear of other significant objects or marine life.",
+      "roi_caption": "statue: The main subject is a statue of a human figure partially buried in the sand. The statue has outstretched arms, suggesting a gesture or pose, and appears to be made of stone or a similar material. The details of the statue are somewhat obscured by sediment and water, but the overall form is clearly recognizable as a human figure. (confidence: 95%)",
+      "detected_objects": [
+        "statue"
+      ]
     },
     {
       "timestamp": 5.7057,
-      "global_caption": null,
-      "roi_caption": null,
-      "detected_objects": []
+      "global_caption": "The scene depicts an underwater environment with a prominent statue partially buried in the sand, surrounded by clear water and a sandy seafloor.",
+      "roi_caption": "statue: The main subject is a human-like statue partially buried in the sand. The statue appears to be a figure with arms extended, possibly in a gesture, and is covered in algae or marine growth, indicating it has been underwater for some time. (confidence: 95%)",
+      "detected_objects": [
+        "statue"
+      ]
     },
     {
       "timestamp": 8.241566666666667,
-      "global_caption": null,
-      "roi_caption": null,
-      "detected_objects": []
+      "global_caption": "The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand, surrounded by clear water with good visibility.",
+      "roi_caption": "statue: The main subject is a human-like statue partially buried in the sand. The statue appears to be a figure with arms outstretched, possibly depicting a gesture or pose. The statue is covered in marine growth, indicating it has been underwater for some time. (confidence: 95%)",
+      "detected_objects": [
+        "statue"
+      ]
     },
     {
       "timestamp": 11.4114,
-      "global_caption": null,
-      "roi_caption": null,
-      "detected_objects": []
+      "global_caption": "The underwater scene shows a sandy seafloor with a prominent statue partially buried in the sand. The statue appears to be a human figure with arms outstretched, possibly depicting a gesture or pose.",
+      "roi_caption": "statue: The main subject is a statue of a human figure partially buried in the sand. The statue has outstretched arms, suggesting a gesture or pose, and appears to be made of stone or concrete. The details of the face and body are partially obscured by sediment and marine growth. (confidence: 95%)",
+      "detected_objects": [
+        "statue"
+      ]
     }
   ],
   "processing_notes": [
-    "Motion types detected: push_in, pedestal_down, pan_left, truck_right, pan_right, pedestal_up, pull_out, truck_left",
+    "Motion types detected: truck_right, pan_right, push_in, pedestal_down, truck_left, pedestal_up, pan_left, pull_out",
     "ROIs tracked: 1",
-    "Keyframes captioned: 0"
+    "Keyframes captioned: 5"
   ]
 }
